@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import axios from 'axios';
+import { levenshtein } from '../../levenshtein';
 
 @Component({
   selector: 'app-zx-spectrum',
@@ -7,18 +9,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ZxSpectrumComponent implements OnInit {
 
-  total_juegos = 0
+  total_juegos: string = ""
 
-  datos_juego: any
+  datos_juego: any = null
 
-   juegos_cinta: any
+  juegos_cinta: any = null
 
 
   constructor() { }
 
-  ngOnInit(): void {  
+  async ngOnInit(): Promise<void> {  
     // Se obtiene el numero de registros al iniciar la aplicacion
-    this.total_juegos = 763
+    /*let result = await axios.get("http://localhost:8080")
+    console.log(result)
+    this.total_juegos = result.data*/
   }
 
   buscarCinta() {
@@ -37,10 +41,39 @@ export class ZxSpectrumComponent implements OnInit {
 
   }
 
-  buscarJuego() {
-    this.datos_juego = {"numero": "234", "nombre": "FILECARD", "tipo": "UTILIDAD", "cinta": "6", "registro": "464"}
+  async buscarJuego() {
+    //this.datos_juego = {"numero": "234", "nombre": "FILECARD", "tipo": "UTILIDAD", "cinta": "6", "registro": "464"}
+
+    //let result = await axios.get("http://localhost:8080/DEFENDER")
+    let cadena = "20 - PATCH POINT S. DEPORTU4O CINTA2B-E"
+    console.log(cadena)
+    this.datos_juego = this.procesarCadena(cadena)
   }
 
+  procesarCadena(cadena: string): any {
+    let cadena_split = cadena.split(" ")
+    // Registro siempre esta en 0
+    let registro = cadena_split[0]
+    // La cinta esta al final, ignoramos lo que hay previo al substring 'CINTA:'
+    let cinta = cadena_split[cadena_split.length-1].substring(6)
+    // Buscar en que posicion empieza el tipo del juego
+    let [tipo,posicion] = this.procesarTipo(cadena_split)
+    // El nombre esta despues del registro y antes del tipo
+    let nombre = cadena_split.slice(2,posicion).join(" ")
+    return {"numero": registro, "nombre": nombre, "tipo": tipo, "cinta": cinta, "registro": registro}
+  }
 
-
+  // Proceso el tipo de juego en caso de tener mas de una palabra
+  procesarTipo(cadena_split: string[]): [string,number] {
+    let tipo = cadena_split[cadena_split.length-2]
+    let principio = cadena_split.length-2
+    if(levenshtein(tipo,"DEPORTIVO") <= 4) {
+      tipo = cadena_split.slice(cadena_split.length-3,cadena_split.length-1).join(" ")
+      principio = cadena_split.length-3
+    } else if(levenshtein(tipo,"MESA") <= 2) {
+      tipo = cadena_split.slice(cadena_split.length-4,cadena_split.length-1).join(" ")
+      principio = cadena_split.length-4
+    }
+    return [tipo,principio]
+  }
 }

@@ -13,6 +13,8 @@
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
+
+
         <div class="tab-pane fade show active" id="nav-juego" role="tabpanel" aria-labelledby="nav-juego-tab">
           <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
@@ -26,7 +28,30 @@
               </form>
             </div>
           </nav>
+          <table *ngIf="datos_juego != null" class="table p-3">
+            <thead>
+              <tr>
+                <th scope="col">Nº</th>
+                <th scope="col">Juego</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Cinta</th>
+                <th scope="col">Fecha de registro</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="col">{{datos_juego.numero}}</th>
+                <th scope="col">{{datos_juego.nombre}}</th>
+                <th scope="col">{{datos_juego.tipo}}</th>
+                <th scope="col">{{datos_juego.cinta}}</th>
+                <th scope="col">{{datos_juego.registro}}</th>
+              </tr>
+            </tbody>
+          </table>
         </div>
+
+
+
         <div class="tab-pane fade" id="nav-cinta" role="tabpanel" aria-labelledby="nav-cinta-tab">
           <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
@@ -40,7 +65,7 @@
               </form>
             </div>
           </nav>
-          <table class="table p-3">
+          <table *ngIf="juegos_cinta != null" class="table p-3">
             <thead>
               <tr>
                 <th scope="col">Nº</th>
@@ -61,6 +86,8 @@
             </tbody>
           </table>
         </div>
+
+
       </div>
     </div>
 </div>
